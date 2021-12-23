@@ -2,7 +2,7 @@ import React from 'react';
 import { TextField } from "@mui/material";
 
 
-const DisplayTimer = ({ setHours, setMinutes, setSeconds }) => {
+const DisplayTimer = ({ reset, time, setTime}) => {
     return (
         <form>
             <TextField
@@ -10,24 +10,24 @@ const DisplayTimer = ({ setHours, setMinutes, setSeconds }) => {
                 label="hours"
                 type="number"
                 placeholder="hours"
-                defaultValue={0}
-                onChange={(e) => setHours(e.target.value)}
+                value={time.hours}
+                onChange={(e) => setTime({...time, hours: e.target.value})}
             />
             <TextField
                 variant="outlined"
                 label="minutes"
                 type="number"
                 placeholder="minutes"
-                defaultValue={0}
-                onChange={(e) => setMinutes(e.target.value)}
+                value={time.minutes}
+                onChange={(e) => setTime({...time, minutes: e.target.value})}
             />
             <TextField
                 variant="outlined"
                 label="seconds"
                 type="number"
                 placeholder="seconds"
-                defaultValue={0}
-                onChange={(e) => setSeconds(e.target.value)}
+                value={time.seconds}
+                onChange={(e) => setTime({...time, seconds: e.target.value})}
             />
         </form>
     )

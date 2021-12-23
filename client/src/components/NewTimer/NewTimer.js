@@ -4,12 +4,23 @@ import { getRemainingTime } from "../getRemainingTime";
 import SetTimer from "../SetTimer/SetTimer";
 import { Typography, Button } from "@mui/material";
 
+const defaultTime = {
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+};
 
 const NewTimer = () => {
     const [start, setStart] = useState(false);
-    const [hours, setHours] = useState(0);
-    const [minutes, setMinutes] = useState(0);
-    const [seconds, setSeconds] = useState(0);
+	const [reset, setReset] = useState(false);
+    const [time, setTime] = useState(defaultTime);
+
+	const clearState = () => {
+            clearInterval(intervalId);
+            setStart(false);
+            setReset(false);
+            setTime(defaultTime);
+	}
 
 
     let intervalId;
@@ -17,25 +28,27 @@ const NewTimer = () => {
         if (start) {
             const snap = Date.now();
             intervalId = setInterval(() => {
-                updateTimeDisplay(snap, { hours, minutes, seconds });
+                updateTimeDisplay(snap, time);
             }, 1000)
             return () => clearInterval(intervalId);
+        } else if (reset) {
+            setReset(false);
         }
-    }, [start])
+
+    }, [start, reset])
+
 
     const updateTimeDisplay = (snap, refTime) => {
         const timeLeft = getRemainingTime(snap, refTime);
         if (timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
-            clearInterval(intervalId);
-            setStart(false);
-            setHours(0);
-            setMinutes(0);
-            setSeconds(0);
+		    clearState();
             console.log("times up");
         } else {
-            setHours(timeLeft.hours);
-            setMinutes(timeLeft.minutes);
-            setSeconds(timeLeft.seconds);
+            setTime({
+                hours: timeLeft.hours,
+                minutes: timeLeft.minutes,
+                seconds: timeLeft.seconds
+            });
         }
     }
 
@@ -44,23 +57,35 @@ const NewTimer = () => {
         setStart(true);
     }
 
+	const handleReset = () => {
+		clearState();
+        setReset(true);
+	}
+
+//            <h1>
+//                {time.hours < 10 ? '0' + time.hours : time.hours}:
+//                {time.minutes < 10 ? '0' + time.minutes : time.minutes}:
+//                {time.seconds < 10 ? '0' + time.seconds : time.seconds}
+//            </h1>
     return (
         <div>
-            <h1>
-                {hours < 10 ? '0' + hours : hours}:
-                {minutes < 10 ? '0' + minutes : minutes}:
-                {seconds < 10 ? '0' + seconds : seconds}
-            </h1>
             <SetTimer
-                setHours={setHours}
-                setMinutes={setMinutes}
-                setSeconds={setSeconds}
+                reset={reset}
+                time={time}
+                setTime={setTime}
             />
+	    <span>
             <Button
                 onClick={(e) => handleStart(e)}
             >
                 start
             </Button>
+            <Button
+            onClick={() => handleReset()}
+            >
+                reset
+            </Button>
+	    </span>
         </div>
     )
 }
